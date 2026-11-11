@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WEARTH · We Earth!</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<style>
+:root{--g:#8BBF3F;--gd:#5E8F22;--gl:#F1F7E6;--gb:#CFE3AE;--ink:#1a1a1a;--gray:#8a8a8a;--line:#ececec;--bg:#fafafa}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
+body{font-family:Pretendard,-apple-system,sans-serif;background:#e9e9e9;color:var(--ink)}
+.app{max-width:430px;min-height:100vh;margin:0 auto;background:var(--bg);position:relative}
+.screen{display:none;min-height:100vh;animation:fade .3s}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+button{font-family:inherit;cursor:pointer;color:inherit}
+.logo{font-family:'Luckiest Guy',sans-serif;color:var(--g);text-align:center;line-height:1}
+.logo .big{font-size:58px;letter-spacing:2px;display:block}
+.logo .small{font-size:30px;display:block;margin-top:6px}
+.btn{width:100%;height:54px;border-radius:30px;border:none;font-size:16px;font-weight:700}
+.btn-green{background:var(--g);color:#fff}
+.btn-black{background:var(--ink);color:#fff}
+
+/* intro */
+#intro{display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 26px;text-align:center}
+#intro.active{display:flex}
+#intro p{margin:34px 0 46px;color:#555;line-height:1.7;font-size:15px}
+
+/* survey */
+.sv-head{position:sticky;top:0;z-index:5;background:#fff;display:flex;align-items:center;height:54px;padding:0 14px;border-bottom:1px solid var(--line)}
+.sv-head b{flex:1;text-align:center;font-size:16px;margin-right:28px}
+.back{background:none;border:none;font-size:24px;width:28px}
+.progress{height:3px;background:#eee}.progress i{display:block;height:100%;width:0;background:var(--g);transition:.3s}
+.sv-body{padding:22px 18px 120px;background:#fff}
+.sv-intro h2{font-size:20px;line-height:1.4}
+.sv-intro p{font-size:13px;color:#666;margin-top:6px;line-height:1.5}
+.sec-label{margin:30px 0 4px;font-size:12px;color:var(--gd);font-weight:700;display:flex;align-items:center;gap:8px}
+.sec-label:after{content:"";flex:1;height:1px;background:var(--gb)}
+.q{margin-top:30px}
+.q h3{font-size:15px;font-weight:700;line-height:1.4}
+.q h3 span{color:var(--gd);margin-right:4px}
+.q .hint{font-size:11px;color:var(--gray);margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:1px solid #ddd;background:#fff;border-radius:20px;padding:9px 15px;font-size:13px;transition:.15s}
+.chip.sel{background:var(--gl);border-color:var(--g);color:var(--gd);font-weight:700}
+.chip.sel:before{content:"✓ "}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.grid2 .chip{border-radius:10px;text-align:left;padding:12px}
+.grid2 .chip.sel:before{content:""}
+.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.row{display:flex;align-items:center;justify-content:space-between;border:1px solid #ddd;background:#fff;border-radius:10px;padding:13px 14px;font-size:13px;text-align:left}
+.row i{width:20px;height:20px;border-radius:5px;border:1.5px solid #ccc;flex:none;font-style:normal;display:grid;place-items:center;color:#fff;font-size:12px}
+.row.radio i{border-radius:50%}
+.row.sel{border-color:var(--g);background:var(--gl)}
+.row.sel i{background:var(--g);border-color:var(--g)}
+.row.sel i:after{content:"✓"}
+.slider-wrap{margin-top:18px}
+.slider-wrap input{width:100%;accent-color:var(--g)}
+.slider-lb{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-top:4px}
+.slider-val{text-align:center;margin-bottom:6px}.slider-val span{background:var(--g);color:#fff;font-size:12px;padding:4px 10px;border-radius:12px}
+.beauty-box{margin-top:30px;background:var(--gl);border-radius:10px;padding:14px;font-size:12px;color:#555;line-height:1.5}
+.beauty-box b{color:var(--gd);display:block;font-size:13px}
+.sv-foot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:12px 18px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#fff 30%);z-index:6}
+.sv-foot small{display:block;text-align:center;font-size:11px;color:var(--gray);margin-top:6px}
+.btn.dim{opacity:.45}
+.q.need h3{color:#d0584a}
+.q.need{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* result */
+#result{padding:40px 22px}
+.r-head{text-align:center;font-size:18px;margin:30px 0 26px}
+.scale-labels{display:flex;justify-content:space-between;font-weight:800;font-size:16px}
+.bar{position:relative;height:16px;border-radius:10px;margin:14px 0 70px;background:linear-gradient(90deg,#3DD6A3,#a6a68a,#F68B7D)}
+.hanger{position:absolute;top:-8px;transform:translateX(-50%);transition:left 1.4s cubic-bezier(.2,.8,.2,1)}
+.r-grade{text-align:center;font-size:26px;font-weight:900;margin-bottom:10px}
+.r-msg{text-align:center;color:#444;line-height:1.6;font-size:14px;word-break:keep-all}
+.r-box{background:var(--gl);border-radius:16px;margin:28px 0;display:flex;padding:20px 8px;text-align:center}
+.r-box div{flex:1;font-size:12px;line-height:1.5}
+.r-box div+div{border-left:1px solid var(--gb)}
+.r-box b{display:block;font-size:20px;color:var(--gd);margin:4px 0}
+
+/* main pages */
+.page{padding-bottom:90px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+.icon{width:24px;height:24px}
+.title{font-size:22px;font-weight:800;padding:18px 20px 10px}
+.search{margin:22px 20px 0;display:flex;align-items:center;gap:10px;border:1px solid #d9dce6;border-radius:30px;padding:7px 7px 7px 16px;background:#fff}
+.search input{flex:1;border:none;outline:none;font-size:13px;font-family:inherit;background:none}
+.search button{width:32px;height:32px;border-radius:50%;border:none;background:var(--g);color:#fff;font-size:15px}
+.carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:22px 30px;scrollbar-width:none}
+.carousel::-webkit-scrollbar,.hscroll::-webkit-scrollbar{display:none}
+.card{flex:none;width:88%;height:210px;border-radius:22px;scroll-snap-align:center;position:relative;color:#fff;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background-size:cover;background-position:center}
+.card:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(0,0,0,.55))}
+.card>*{position:relative}
+.card .tag{position:absolute;top:14px;left:18px;font-family:'Luckiest Guy';font-size:18px;font-weight:400}
+.card .pg{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.4);font-size:11px;padding:3px 9px;border-radius:10px}
+.card small{font-size:12px}.card h3{font-size:23px;line-height:1.3;margin-top:4px}
+.rank{margin:0 20px;background:#fff;border:1px solid var(--line);border-radius:30px;padding:8px 14px;display:flex;align-items:center;gap:10px;height:46px;overflow:hidden;cursor:pointer}
+.rank .badge{background:var(--g);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:14px;flex:none}
+.rank .roll{flex:1;height:20px;overflow:hidden}
+.rank .roll div{transition:transform .5s}
+.rank .roll p{height:20px;line-height:20px;font-size:14px;font-weight:700}
+.rank .roll p em{font-style:normal;color:var(--gray);margin-right:8px;font-weight:500}
+.sec{display:flex;justify-content:space-between;align-items:center;padding:26px 20px 12px;font-size:19px;font-weight:800}
+.sec span{font-size:12px;color:var(--gray);font-weight:500}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
+.p{flex:none;width:100px;font-size:12px;cursor:pointer}
+.p .img{height:100px;border-radius:14px;background:#efefef;display:grid;place-items:center;font-size:42px;margin-bottom:6px;position:relative}
+.p .gr{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:#fff}
+.p b{display:block;font-size:14px;margin-top:2px}
+.gA{color:var(--gd)}.gB{color:#b08a1e}.gC{color:#d0584a}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--line);display:none;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:10}
+.tabbar.show{display:flex}
+.tabbar button{flex:1;background:none;border:none;font-size:11px;color:#9aa0ae;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tabbar button.on{color:var(--ink);font-weight:700}
+.tabbar svg{width:22px;height:22px}
+
+/* explore */
+.cats{display:flex;gap:8px;overflow-x:auto;padding:14px 20px 0;scrollbar-width:none}
+.cats .chip{flex:none}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 20px}
+.pgrid .p{width:auto}.pgrid .p .img{height:150px}
+
+/* feed */
+.feed-card{margin:0 20px 14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center}
+.feed-card .img{width:70px;height:70px;border-radius:12px;background:var(--gl);display:grid;place-items:center;font-size:32px;flex:none}
+.feed-card h4{font-size:14px}.feed-card p{font-size:12px;color:#666;margin-top:4px;line-height:1.4}
+.pill{display:inline-block;font-size:10px;background:var(--gl);color:var(--gd);padding:2px 8px;border-radius:10px;margin-top:6px;margin-right:4px;font-weight:700}
+
+/* news */
+.news{margin:0 20px 16px;border-radius:16px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+.news .ph{height:140px;background-size:cover;background-position:center}
+.news div.t{padding:14px}.news h4{font-size:15px;line-height:1.4}.news p{font-size:12px;color:var(--gray);margin-top:6px}
+
+/* my */
+.profile{display:flex;align-items:center;gap:18px;padding:10px 20px 20px}
+.avatar{width:84px;height:84px;border-radius:50%;background:radial-gradient(circle,#7bbd3c,#2f6d1e);box-shadow:0 0 0 4px #e3f0d0}
+.profile h2{font-size:20px}.profile h2 span{color:var(--g);font-size:15px;margin-left:6px}
+.profile table{font-size:13px;margin-top:8px}.profile td{padding:2px 20px 2px 0}.profile td:first-child{font-weight:700}
+.status{margin:0 20px;background:#fff;border:1px solid var(--line);border-radius:40px;padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;line-height:1.5}
+.status .mascot{width:38px;height:38px;border-radius:50%;background:var(--gl);display:grid;place-items:center;font-size:22px;flex:none}
+.status em{font-style:normal;color:var(--g);font-weight:800;font-size:15px}
+.menu a{display:flex;justify-content:space-between;padding:15px 20px;font-size:16px;font-weight:600;color:var(--ink);text-decoration:none;cursor:pointer}
+.menu a:after{content:"›";font-size:22px;color:#666;line-height:1}
+.bottle{margin:10px 20px;background:var(--g);border-radius:6px;color:#fff;display:flex;gap:14px;align-items:center;padding:10px}
+.bottle .b{width:72px;height:50px;background:#eee;border-radius:4px;display:grid;place-items:center;font-size:26px}
+.bottle b{font-size:17px}.bottle p{font-size:12px;opacity:.9;margin-top:2px}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:20;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- 시작 화면 -->
+<section id="intro" class="screen active">
+  <div class="logo"><span class="big">WEARTH</span><span class="small">We Earth!</span></div>
+  <p>AI가 옷의 소재를 분석해<br>해양·육상 생태계에 미치는 영향을 알려드려요.<br><br>먼저 간단한 설문으로<br>나만의 <b>친환경 쇼핑 성향</b>을 알아볼까요?</p>
+  <button class="btn btn-green" onclick="startSurvey()">시작하기</button>
+</section>
+
+<!-- 설문 -->
+<section id="survey" class="screen">
+  <div class="sv-head"><button class="back" onclick="show('intro')">‹</button><b>취향 및 가치관 분석</b></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="sv-body" id="svBody"></div>
+  <div class="sv-foot">
+    <button class="btn btn-green" id="svDone" onclick="submitSurvey()">나만의 맞춤 에코 피드 시작하기 →</button>
+    <small id="svLeft"></small>
+  </div>
+</section>
+
+<!-- 결과 -->
+<section id="result" class="screen">
+  <div class="logo"><span class="big" style="font-size:40px">WEARTH</span></div>
+  <p class="r-head">나의 패션 발자국은</p>
+  <div class="scale-labels"><span>LOW</span><span>MEDIUM</span><span>HIGH</span></div>
+  <div class="bar">
+    <svg class="hanger" id="hanger" style="left:0%" width="64" height="48" viewBox="0 0 64 48" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M26 10a6 6 0 1 1 6 6v5L4 40h56L32 21"/></svg>
+  </div>
+  <div class="r-grade" id="rGrade"></div>
+  <p class="r-msg" id="rMsg"></p>
+  <div class="r-box">
+    <div>평균 소비자 대비<b id="rPct"></b></div>
+    <div>연간 의류 탄소 배출(추정)<b id="rCo2"></b><span id="rEq"></span></div>
+  </div>
+  <button class="btn btn-green" onclick="goTab('home')">홈으로 시작하기</button>
+</section>
+
+<!-- 홈 -->
+<section id="home" class="screen page">
+  <div class="topbar">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    <svg class="icon" onclick="toast('새 알림이 없어요')" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+  </div>
+  <div class="logo" style="margin-top:6px"><span class="big" style="font-size:52px">WEARTH</span><span class="small" style="font-size:26px">We Earth!</span></div>
+  <div class="search"><span>📷</span><input id="homeQ" placeholder="친환경 상품 및 브랜드 검색" onkeydown="if(event.key==='Enter')doSearch('homeQ')"><button onclick="doSearch('homeQ')">⌕</button></div>
+
+  <div class="carousel" id="carousel">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800')"><span class="tag">Wearth</span><span class="pg">1/3</span><small>친환경 소비를 원하시나요?</small><h3>요즘 뜨는<br>친환경 브랜드</h3></div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=800')"><span class="tag">Wearth</span><span class="pg">2/3</span><small>바다를 지키는 선택</small><h3>미세플라스틱 걱정 없는<br>천연 소재 가이드</h3></div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800')"><span class="tag">Wearth</span><span class="pg">3/3</span><small>오래 입는 옷이 가장 친환경</small><h3>한 벌을 10년 입는<br>옷 관리법</h3></div>
+  </div>
+
+  <div class="rank" onclick="goTab('explore')">
+    <span class="badge">랭킹</span>
+    <div class="roll"><div id="roll"></div></div>
+  </div>
+
+  <div class="sec" onclick="goTab('my')">최근 본 상품 ›</div>
+  <div class="hscroll recent"></div>
+
+  <div class="sec">이번 주 추천 친환경 아이템 ›</div>
+  <div class="hscroll" id="recoRow"></div>
+</section>
+
+<!-- 탐색 -->
+<section id="explore" class="screen page">
+  <div class="title">탐색</div>
+  <div class="search" style="margin-top:4px"><span>🔗</span><input id="exQ" placeholder="상품 링크를 붙여넣거나 검색하세요" onkeydown="if(event.key==='Enter')doSearch('exQ')"><button onclick="doSearch('exQ')">⌕</button></div>
+  <div class="cats" id="cats"></div>
+  <div class="pgrid" id="pgrid"></div>
+</section>
+
+<!-- 내 피드 -->
+<section id="feed" class="screen page">
+  <div class="title">내 피드</div>
+  <p style="padding:0 20px 16px;font-size:13px;color:#666" id="feedSub"></p>
+  <div id="feedList"></div>
+</section>
+
+<!-- 뉴스 -->
+<section id="news" class="screen page">
+  <div class="title">뉴스</div>
+  <div id="newsList"></div>
+</section>
+
+<!-- 마이 -->
+<section id="my" class="screen page">
+  <div class="title">마이</div>
+  <div class="profile">
+    <div class="avatar"></div>
+    <div>
+      <h2>김어스<span id="myGrade">Gold Closet</span></h2>
+      <table><tr><td>적립금</td><td>2,400원</td></tr><tr><td>쿠폰</td><td>5개</td></tr></table>
+    </div>
+  </div>
+  <div class="status"><div class="mascot">🌱</div><div><b>김어스님</b>, 잘 하고 있어요<br>지금까지 절약한 물이 벌써 <em>500mL</em> 입니다</div></div>
+  <div class="sec" style="font-size:17px">최근 본 상품 ›</div>
+  <div class="hscroll recent"></div>
+  <div class="menu" style="margin-top:14px">
+    <a onclick="toast('주문 내역이 없어요')">주문 내역</a>
+    <a onclick="toast('취소/반품/교환 내역이 없어요')">취소/반품/교환 내역</a>
+    <a onclick="toast('재입고 알림 내역이 없어요')">재입고 알림 내역</a>
+  </div>
+  <div class="bottle" onclick="toast('공병 수거 신청 기능 준비 중이에요')"><div class="b">🧴</div><div><b>공병을 모아보세요!</b><p>공병을 모아서 기부하면 환경에 도움이 됩니다</p></div></div>
+  <div class="menu">
+    <a onclick="toast('고객센터로 연결 준비 중이에요')">고객센터</a>
+    <a onclick="toast('1:1 문의 내역이 없어요')">1:1 문의 내역</a>
+    <a onclick="toast('상품 문의 내역이 없어요')">상품 문의 내역</a>
+    <a onclick="startSurvey()">취향 설문 다시 하기</a>
+  </div>
+</section>
+
+<nav class="tabbar" id="tabbar">
+  <button data-t="home" onclick="goTab('home')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg>홈</button>
+  <button data-t="explore" onclick="goTab('explore')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2zM19 2v4M17 4h4"/></svg>탐색</button>
+  <button data-t="feed" onclick="goTab('feed')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/><circle cx="17" cy="17" r="3.5"/></svg>내 피드</button>
+  <button data-t="news" onclick="goTab('news')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>뉴스</button>
+  <button data-t="my" onclick="goTab('my')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>마이</button>
+</nav>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+/* 저장소 안전 래퍼: 미리보기 창·파일로 열기 등 localStorage가 막힌 환경에서도 동작 */
+const MEM={};
+const store={
+ get(k){try{return localStorage.getItem(k)}catch(e){return MEM[k]??null}},
+ set(k,v){MEM[k]=v;try{localStorage.setItem(k,v)}catch(e){}}
+};
+let surveyDone=false;
+/* ---------- 설문 (11문항) ----------
+ type: chips(복수) / chip1(단일) / grid(복수,2열) / list(단일) / check(복수,체크) / slider
+ s: 환경 부담 점수(0=친환경 ~ 3=부담 큼) — 점수 계산에 쓰는 문항만 */
+const SURVEY=[
+ {sec:"SECTION 1. 관심사 및 가치관"},
+ {id:1,t:"평소 온라인에서 어떤 상품을 가장 자주 구매하시나요?",hint:"복수 선택이 가능합니다.",type:"chips",o:["👕 의류","👟 신발","👜 가방/모자 및 잡화","💄 화장품/뷰티","➕ 기타"]},
+ {id:2,t:"환경성을 분석해보고 싶은 상품은 무엇인가요?",hint:"복수 선택이 가능합니다.",type:"grid",o:["의류 전반","신발","패션잡화","화장품/뷰티"]},
+ {id:3,t:"중요하게 생각하는 친환경적 가치는 무엇인가요?",hint:"우선적으로 추천 받고 싶은 가치를 모두 선택해주세요.",type:"grid",o:["🌿 유기농·지속가능 원료","🐰 동물복지 / 비건","♻️ 재활용 소재","💧 수질오염 예방","🌍 탄소배출 저감","🥤 플라스틱 절감","🌳 산림·생물다양성","🤝 공정 무역·노동"]},
+ {sec:"SECTION 2. 라이프스타일 및 소비 습관"},
+ {id:4,t:"새로운 의류를 얼마나 자주 구매하시나요?",type:"chip1",o:["월 1회 미만","월 1~2회","월 3~4회","월 5회 이상"],s:[0,1,2,3]},
+ {id:5,t:"제품을 구매하면 보통 얼마나 오래 사용하시나요?",type:"chip1",o:["6개월 미만","6개월~1년","1~2년","2~3년","3년 이상"],s:[3,2.2,1.5,0.7,0]},
+ {id:6,t:"더 이상 입지 않는 제품은 주로 어떻게 처리하시나요?",type:"grid1",o:["📦 계속 보관한다","💰 중고로 판매한다","♻️ 의류수거함 배출","🗑️ 일반쓰레기 배출"],s:[1.5,0,1,3]},
+ {id:7,t:"제품 구매 시 가장 중요하게 생각하는 요소는?",type:"chip1",o:["가격","디자인","브랜드","환경성 & 지속가능성","성분"],s:[3,2,2,0,1]},
+ {id:8,t:"친환경 제품 선택 시 가장 어려운 점은?",type:"list",o:["어떤 제품이 진짜 친환경인지 정보 부족","기존 제품에 비해 가격이 부담스러움","마음에 드는 스타일 및 기능 부족"]},
+ {id:9,t:"친환경 제품을 위해 추가 비용 지불 의향이 있나요?",type:"slider",o:["추가 비용 없음","~10%","10~20%","20~30%","30% 이상"],s:[3,2,1.5,0.7,0]},
+ {box:true},
+ {id:10,t:"평소 피부 타입은 무엇인가요?",type:"chip1",o:["건성","지성","복합성","중성","민감성","잘 모르겠음"]},
+ {id:11,t:"화장품 구매 시 피하고 싶은 성분은?",hint:"복수 선택이 가능합니다.",type:"check",o:["인공 향료 및 색소 무첨가","동물성 원료 배제 (비건 인증)","알레르기 유발 주의 성분 배제"]}
+];
+const QS=SURVEY.filter(x=>x.id);
+let A={};
+
+function startSurvey(){A={};A[9]=[2];buildSurvey();show('survey');scrollTo(0,0)}
+function buildSurvey(){
+ let h=`<div class="sv-intro"><h2>지속가능한 쇼핑의 시작, WEARTH</h2><p>몇 가지 질문에 답해주시면 딱 맞는 친환경 가치와 브랜드를 피드에 맞춤 추천해 드릴게요!</p></div>`;
+ SURVEY.forEach(it=>{
+  if(it.sec){h+=`<div class="sec-label">${it.sec}</div>`;return}
+  if(it.box){h+=`<div class="beauty-box"><b>뷰티 카테고리 추가 질문</b>화장품도 함께 분석받고 싶다면 답해주세요. (선택)</div>`;return}
+  h+=`<div class="q" id="q${it.id}"><h3><span>Q${it.id}.</span>${it.t}</h3>${it.hint?`<p class="hint">${it.hint}</p>`:''}`;
+  const sel=A[it.id]||[];
+  if(it.type==='slider'){
+   const v=sel[0];
+   h+=`<div class="slider-wrap"><div class="slider-val"><span id="sv9">${it.o[v]}</span></div><input type="range" min="0" max="4" value="${v}" oninput="A[9]=[+this.value];$('sv9').textContent=QS[8].o[this.value];upd()"><div class="slider-lb"><span>추가 비용 없음</span><span>30% 이상</span></div></div>`;
+  }else{
+   const wrap={chips:'chips',chip1:'chips',grid:'grid2',grid1:'grid2',list:'list',check:'list'}[it.type];
+   h+=`<div class="${wrap}">`+it.o.map((o,i)=>{
+     const on=sel.includes(i)?' sel':'';
+     if(wrap==='list')return `<button class="row${it.type==='list'?' radio':''}${on}" onclick="pick(${it.id},${i})">${o}<i></i></button>`;
+     return `<button class="chip${on}" onclick="pick(${it.id},${i})">${o}</button>`;
+   }).join('')+`</div>`;
+  }
+  h+=`</div>`;
+ });
+ $('svBody').innerHTML=h;upd();
+}
+function pick(id,i){
+ const q=QS.find(x=>x.id===id),multi=['chips','grid','check'].includes(q.type);
+ let s=A[id]||[];
+ if(multi)s=s.includes(i)?s.filter(x=>x!==i):[...s,i];else s=[i];
+ A[id]=s;
+ const y=scrollY;buildSurvey();scrollTo(0,y);
+}
+const REQUIRED=[1,2,3,4,5,6,7,8,9]; // 10~11 뷰티 문항은 선택
+function upd(){
+ const done=REQUIRED.filter(id=>(A[id]||[]).length).length;
+ $('prog').style.width=(QS.filter(q=>(A[q.id]||[]).length).length/QS.length*100)+'%';
+ $('svDone').classList.toggle('dim',done<REQUIRED.length);
+ $('svLeft').textContent=done<REQUIRED.length?`필수 문항 ${REQUIRED.length-done}개가 남았어요 (Q10~11은 선택)`:'모든 필수 문항에 답했어요 🌱';
+}
+
+/* 제출: 빠진 필수 문항이 있으면 그 문항으로 이동해 표시 */
+function submitSurvey(){
+ const miss=REQUIRED.find(id=>!(A[id]||[]).length);
+ if(miss){
+  const el=$('q'+miss);el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.remove('need');void el.offsetWidth;el.classList.add('need');
+  toast(`Q${miss}에 답해주세요`);return;
+ }
+ try{result()}catch(e){console.error(e);toast('오류가 발생했어요: '+e.message)}
+}
+/* ---------- 결과 ---------- */
+function result(){
+ const sc=QS.filter(q=>q.s),tot=sc.reduce((a,q)=>a+q.s[A[q.id][0]],0);
+ const score=tot/(sc.length*3),pct=Math.round(score*100);
+ let g,m,c;
+ if(score<.34){g="🌿 LOW · 그린 리더";c="Gold Closet";m="훌륭해요! 이미 지구를 생각하는 소비를 하고 있어요. WEARTH로 더 똑똑한 선택을 이어가세요."}
+ else if(score<.67){g="🍃 MEDIUM · 그린 러너";c="Silver Closet";m="좋은 습관이 자리 잡고 있어요. 소재 정보만 조금 더 확인해도 큰 변화를 만들 수 있어요."}
+ else{g="🌱 HIGH · 그린 비기너";c="Bronze Closet";m="지금이 시작하기 가장 좋은 때! AI가 알려주는 친환경 등급으로 한 걸음씩 바꿔봐요."}
+ const co2=Math.round(40+score*360),diff=Math.round((0.5-score)*200);
+ $('rGrade').textContent=g;$('rMsg').textContent=m;
+ $('rPct').textContent=diff>=0?`${diff}% 낮음`:`${-diff}% 높음`;
+ $('rCo2').textContent=co2+'kg';$('rEq').textContent=`자동차 약 ${Math.round(co2/0.17)}km`;
+ $('myGrade').textContent=c;
+ surveyDone=true;store.set('wearth',JSON.stringify({A,c}));
+ buildFeed();
+ $('hanger').style.left='0%';show('result');
+ setTimeout(()=>$('hanger').style.left=Math.min(Math.max(pct,4),96)+'%',150);
+}
+
+/* ---------- 데이터(목업) ---------- */
+const PRODUCTS=[
+ {n:"HAWAII FIVE",p:268000,e:"👜",g:"A",c:"잡화"},{n:"HAWAII FIVE",p:268000,e:"💼",g:"A",c:"잡화"},
+ {n:"ORBITER",p:44000,e:"🎒",g:"B",c:"잡화"},{n:"SONNY",p:148000,e:"🛍️",g:"A",c:"잡화"},
+ {n:"오가닉 코튼 티",p:39000,e:"👕",g:"A",c:"의류"},{n:"리사이클 니트",p:89000,e:"🧶",g:"A",c:"의류"},
+ {n:"린넨 쇼츠",p:52000,e:"🩳",g:"A",c:"의류"},{n:"폴리 패딩",p:159000,e:"🧥",g:"C",c:"의류"},
+ {n:"스톤워시 데님",p:79000,e:"👖",g:"C",c:"의류"},{n:"리사이클 러너",p:139000,e:"👟",g:"B",c:"신발"},
+ {n:"코르크 샌들",p:69000,e:"🩴",g:"A",c:"신발"},{n:"비건 립밤",p:12000,e:"💄",g:"A",c:"뷰티"}
+];
+const pCard=x=>`<div class="p" onclick="toast('${x.n} · 친환경 등급 ${x.g} (상세 분석 준비 중)')"><div class="img">${x.e}<span class="gr g${x.g}">${x.g}</span></div>${x.n}<b>${x.p.toLocaleString()}원</b></div>`;
+document.querySelectorAll('.recent').forEach(el=>el.innerHTML=PRODUCTS.slice(0,4).map(pCard).join(''));
+$('recoRow').innerHTML=PRODUCTS.filter(x=>x.g==='A').slice(4).map(pCard).join('');
+
+/* 랭킹 롤링 */
+const RANK=["Patagonia","Adidas","Freitag","Nike","Pleats Mama"];
+$('roll').innerHTML=[...RANK,RANK[0]].map((r,i)=>`<p><em>${i%RANK.length+1}</em>${r}</p>`).join('');
+let ri=0;setInterval(()=>{ri++;const r=$('roll');r.style.transition='transform .5s';r.style.transform=`translateY(-${ri*20}px)`;
+ if(ri===RANK.length)setTimeout(()=>{r.style.transition='none';r.style.transform='translateY(0)';ri=0},520)},2500);
+
+/* 탐색 */
+const CATS=["전체","의류","신발","잡화","뷰티","등급 A"];let cat="전체";
+function buildExplore(q=''){
+ $('cats').innerHTML=CATS.map(c=>`<button class="chip${c===cat?' sel':''}" onclick="cat='${c}';buildExplore()">${c}</button>`).join('');
+ const list=PRODUCTS.filter(x=>(cat==='전체'||x.c===cat||(cat==='등급 A'&&x.g==='A'))&&(!q||x.n.includes(q)));
+ $('pgrid').innerHTML=list.length?list.map(pCard).join(''):`<p style="grid-column:1/3;text-align:center;color:#999;padding:40px 0">검색 결과가 없어요</p>`;
+}
+function doSearch(id){const v=$(id).value.trim();if(!v)return toast('검색어를 입력해주세요');
+ if(/^https?:\/\//.test(v)){toast('AI 소재 분석 기능은 준비 중이에요');return}
+ cat='전체';goTab('explore');$('exQ').value=v;buildExplore(v)}
+
+/* 내 피드 (설문 기반) */
+function buildFeed(){
+ const vals=(A[3]||[]).map(i=>QS[2].o[i].replace(/^\S+\s/,''));
+ $('feedSub').textContent=vals.length?`'${vals.join(', ')}' 가치를 기준으로 추천해요`:'설문 결과를 바탕으로 추천해요';
+ const items=[
+  {e:"👕",t:"오가닉 코튼 베이직 티",d:"화학 농약 없이 재배한 면으로 수질오염을 줄였어요.",tags:["유기농","수질"]},
+  {e:"🧶",t:"리사이클 울 니트",d:"버려진 울을 재가공해 탄소배출을 약 40% 줄였어요.",tags:["재활용","탄소"]},
+  {e:"👟",t:"페트병 업사이클 스니커즈",d:"한 켤레당 페트병 8개를 재활용했어요.",tags:["플라스틱","재활용"]},
+  {e:"🧥",t:"비건 레더 재킷",d:"동물성 원료 없이 선인장 가죽으로 만들었어요.",tags:["비건"]},
+  {e:"🩳",t:"린넨 하프 팬츠",d:"물 사용이 적은 아마 섬유로 만든 천연 소재예요.",tags:["수질","유기농"]}
+ ];
+ $('feedList').innerHTML=items.map(x=>`<div class="feed-card"><div class="img">${x.e}</div><div><h4>${x.t}</h4><p>${x.d}</p>${x.tags.map(t=>`<span class="pill">#${t}</span>`).join('')}</div></div>`).join('');
+}
+/* 뉴스 */
+const NEWS=[
+ {img:"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800",t:"합성섬유 세탁 한 번에 미세플라스틱 수십만 개… 바다로 간다",d:"해양 생태계 · 3분 읽기"},
+ {img:"https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",t:"청바지 한 벌 만드는 데 필요한 물, 얼마나 될까?",d:"육상 생태계 · 4분 읽기"},
+ {img:"https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800",t:"그린워싱 구별법: '친환경' 라벨, 이렇게 확인하세요",d:"가이드 · 5분 읽기"}
+];
+$('newsList').innerHTML=NEWS.map(n=>`<div class="news" onclick="toast('기사 상세 페이지 준비 중이에요')"><div class="ph" style="background-image:url('${n.img}')"></div><div class="t"><h4>${n.t}</h4><p>${n.d}</p></div></div>`).join('');
+
+/* ---------- 화면 전환 ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');
+ $('tabbar').classList.toggle('show',['home','explore','feed','news','my'].includes(id));scrollTo(0,0)}
+function goTab(t){if(!surveyDone&&!store.get('wearth'))return startSurvey(); // 설문 완료 전에는 진입 불가
+ if(t==='explore')buildExplore();show(t);
+ document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1800)}
+
+/* 이전에 설문을 마친 사용자는 바로 홈 */
+let saved=null;try{saved=JSON.parse(store.get('wearth')||'null')}catch(e){}
+if(saved&&saved.A){surveyDone=true;A=saved.A;$('myGrade').textContent=saved.c;buildFeed();goTab('home')}
+</script>
+</body>
+</html>
